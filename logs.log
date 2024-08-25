@@ -1,0 +1,29 @@
+2024-08-23 19:41:33.643 | INFO     | preprocessing_openpyxl:preprocessing_file_excel:68 - 
+Новый51.xlsx: сняли объединение ячеек, проставли уровни группировок и признак курсив в ячейках
+2024-08-23 19:41:34.990 | INFO     | __main__:main_process:37 - Новый51.xlsx: успешно загрузили в DataFrame
+2024-08-23 19:41:34.995 | INFO     | processing.A_table_header:table_header:27 - Новый51.xlsx: успешно обновили шапку таблицы, удалили строки выше шапки
+2024-08-23 19:41:34.996 | INFO     | processing.A_table_header:table_header:33 - Новый51.xlsx: удалили пустые строки и столбцы
+2024-08-23 19:41:34.998 | INFO     | processing.B_handle_missing_values_in_account:handle_missing_values_in_account:28 - ERROR: None
+2024-08-23 19:41:34.999 | INFO     | processing.B_handle_missing_values_in_account:handle_missing_values_in_account:32 - current_ind:
+2024-08-23 19:41:35.001 | INFO     | processing.B_handle_missing_values_in_account:handle_missing_values_in_account:41 - Новый51.xlsx: добавили столбец с наименованием файла (для различения наименований компаний)
+2024-08-23 19:41:35.054 | INFO     | processing.C_horizontal_structure:horizontal_structure:33 - Новый51.xlsx: разнесли уровни в горизонтальную иерархию
+2024-08-23 19:41:35.056 | INFO     | processing.E_corr_account_column:corr_account_col:26 - Новый51.xlsx: добавили столбец с корр.счетом
+2024-08-23 19:41:35.070 | INFO     | analysis_deviations:revolutions_before_processing:18 - Новый51.xlsx: сформировали таблицу с оборотами в разрезе счетов до обработки
+2024-08-23 19:41:35.099 | INFO     | processing.F_lines_delete:lines_delete:36 - 
+Все счета, где есть субконто Контрагент required_prefixes: ['58', '60', '62', '63', '66', '67', '75', '76']
+2024-08-23 19:41:35.102 | INFO     | processing.F_lines_delete:lines_delete:46 - 
+счета и субсчета в нашем анализе и их количество: {'60': 1, '60.02': 4, '62': 1, '62.02': 3, '66': 1, '66.01': 3, '71': 1, '75': 1, '75.01': 2, '75.02': 2, '91': 1, '91.02': 1, '66.02': 2}
+2024-08-23 19:41:35.104 | INFO     | processing.F_lines_delete:lines_delete:49 - 
+счета в нашем анализе без субсчетов values_filtr: ['71', '00', '000']
+2024-08-23 19:41:35.104 | INFO     | processing.F_lines_delete:lines_delete:52 - 
+список ключей словаря со счетами и субсчетами list_key_count_dict0: ['60', '60.02', '62', '62.02', '66', '66.01', '71', '75', '75.01', '75.02', '91', '91.02', '66.02']
+2024-08-23 19:41:35.104 | INFO     | processing.F_lines_delete:lines_delete:62 - 
+счета в нашем анализе без субсчетов intersection: {'71'}
+2024-08-23 19:41:35.105 | INFO     | processing.F_lines_delete:lines_delete:75 - 
+список ключей для удаления из list_key_count_dict0 difference_list: ['62', '66', '76', '58', '60', '67', '75', '63']
+2024-08-23 19:41:35.105 | INFO     | processing.F_lines_delete:lines_delete:82 - 
+получили обновленный словарь со счетами в нашем анализе, где есть субконто Контрагент count_dict0: {'60.02': 4, '62.02': 3, '66.01': 3, '71': 1, '75.01': 2, '75.02': 2, '91': 1, '91.02': 1, '66.02': 2}
+2024-08-23 19:41:35.105 | INFO     | processing.F_lines_delete:lines_delete:90 - 
+получили счета в нашем анализе, где включена расшифровка Контрагент keys_with_positive_values: ['60.02', '62.02', '66.01', '75.01', '75.02', '66.02']
+2024-08-23 19:41:35.105 | INFO     | processing.F_lines_delete:lines_delete:100 - 
+получили финальные счета и субсчета, где включена расшифровка Контрагент parent_accounts: ['62', '60.02', '75.01', '66.02', '66', '75.02', '62.02', '60', '66.01', '75']
