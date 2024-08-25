@@ -17,3 +17,29 @@ def revolutions_before_processing(df, file_excel, sign_1c, debet_name, credit_na
         df_for_check.rename(columns={'Дебет': 'С кред. счетов', 'Кредит': 'В дебет счетов'}, inplace=True)
     logger.info(f'{file_excel}: сформировали таблицу с оборотами в разрезе счетов до обработки')
     return df_for_check
+
+def revolutions_after_processing(df, df_for_check, file_excel):
+    df_for_check_2 = df[['Корр_счет', 'С кред. счетов', 'В дебет счетов']].copy()
+
+    df_for_check_2['Корр_счет'] = df_for_check_2['Корр_счет'].astype(str).copy()
+    df_for_check_2['Кор.счет_ЧЕК'] = df_for_check_2['Корр_счет'].apply(lambda x: x[:2] if len(x) >= 2 else x).copy()
+    df_for_check_2 = df_for_check_2.groupby('Кор.счет_ЧЕК')[['С кред. счетов', 'В дебет счетов']].sum().copy()
+    df_for_check_2 = df_for_check_2.reset_index()
+
+    # Объединение DataFrame с использованием внешнего соединения
+    merged_df = df_for_check.merge(df_for_check_2, on='Кор.счет_ЧЕК', how='outer',
+                                   suffixes=('_df_for_check', '_df_for_check_2'))
+
+    # Заполнение отсутствующих значений нулями
+    merged_df = merged_df.infer_objects().fillna(0)
+
+    # Вычисление разницы
+    merged_df['Разница_С_кред'] = merged_df['С кред. счетов_df_for_check'] - merged_df['С кред. счетов_df_for_check_2']
+    merged_df['Разница_В_дебет'] = merged_df['В дебет счетов_df_for_check'] - merged_df['В дебет счетов_df_for_check_2']
+
+    merged_df['Разница_С_кред'] = merged_df['Разница_С_кред'].apply(lambda x: round(x))
+    merged_df['Разница_В_дебет'] = merged_df['Разница_В_дебет'].apply(lambda x: round(x))
+
+    merged_df['Исх.файл'] = file_excel
+    logger.info(f'{file_excel}: сформировали дополнительную таблицу с отклонениями до и после обработки')
+    return merged_df

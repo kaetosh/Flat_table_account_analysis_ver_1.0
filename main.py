@@ -2,11 +2,12 @@ import os
 import sys
 import pandas as pd
 
-from analysis_deviations import revolutions_before_processing
+from analysis_deviations import revolutions_before_processing, revolutions_after_processing
 from logger import logger
 from processing.C_horizontal_structure import horizontal_structure
 from processing.E_corr_account_column import corr_account_col
 from processing.F_lines_delete import lines_delete
+from processing.G_shiftable_level import shiftable_level
 from settings import folder_path
 from preprocessing_openpyxl import preprocessing_file_excel
 from processing.A_table_header import table_header
@@ -53,11 +54,38 @@ def main_process():
         # формируем вспомогательную таблицу с оборотами до обработки
         # потом сравним данные с итоговой таблицей, чтобы убедиться в правильности результата
         df_for_check = revolutions_before_processing(df, file_excel, ns.sign_1c, ns.debet_name, ns.credit_name)
-        df_for_check.to_excel('check.xlsx')
 
-        lines_delete(df, ns.sign_1c)
+        # удаляем дублирующие строки (родительские счета, счета по которым есть аналитика, обороты, сальдо и т.д.)
+        df = lines_delete(df, ns.sign_1c, file_excel, ns.debet_name, ns.credit_name)
 
-        df.to_excel('final.xlsx')
+        # Сдвиг столбцов, чтобы субсчета располагались в одном столбце
+        shiftable_level(df)
+
+        # формируем вспомогательную таблицу с оборотами после обработки
+        # записываем данные по отклонениям до/после обработки
+        df_check = revolutions_after_processing(df, df_for_check, file_excel)
+        dict_df_check[file_excel] = df_check
+
+        # запишем таблицу в словарь
+        dict_df[file_excel] = df
+        logger.info(f'{file_excel}: успешно записали таблицу в словарь для дальнейшего объединения с другими таблицами')
+
+    # объединяем все таблицы в одну
+    result, result_check = None, None
+    try:
+        result = pd.concat(list(dict_df.values()))
+        result_check = pd.concat(list(dict_df_check.values()))
+        logger.info('\nОбъединение завершено, пытаемся выгрузить файл в excel...')
+    except Exception as e:
+        logger.error(f'\n\nОшибка при объединении файлов {e}')
+        # Ошибка при объединении файлов could not convert string to float: 'Исх.файл'
+    # выгружаем в excel
+    try:
+        result.to_excel('summary_files/СВОД_анализ_счетов.xlsx', index=False)
+        result_check.to_excel('summary_files/СВОД_ОТКЛ_анализ_счетов.xlsx', index=False)
+        logger.info('\nФайл успешно выгружен в excel, скрипт завершен!')
+    except Exception as e:
+        logger.error(f'\nОшибка при сохранении файла в excel: {e}')
 
 
 if __name__ == "__main__":

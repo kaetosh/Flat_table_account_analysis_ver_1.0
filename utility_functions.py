@@ -12,7 +12,7 @@ def is_accounting_code(value):
         return False
 
 
-# A function to check whether the account is a parent account
+# Функция для проверки того, является ли счет без субсчетов
 def is_parent(account, accounts):
     for acc in accounts:
         if acc.startswith(account + '.') and acc != account:

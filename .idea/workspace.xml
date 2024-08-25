@@ -4,7 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a9b784e-8cca-49d8-90d0-ac6fcc3dd318" name="Changes" comment="1" />
+    <list default="true" id="7a9b784e-8cca-49d8-90d0-ac6fcc3dd318" name="Changes" comment="1">
+      <change afterPath="$PROJECT_DIR$/processing/G_shiftable_level.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis_deviations.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis_deviations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/check.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/final.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logs.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/preprocessing_files/preprocessing_Аназиз51.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing_files/preprocessing_Аназиз51.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/preprocessing_files/preprocessing_Новый51.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/preprocessing_files/preprocessing_Новый51.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/processing/E_corr_account_column.py" beforeDir="false" afterPath="$PROJECT_DIR$/processing/E_corr_account_column.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/processing/F_lines_delete.py" beforeDir="false" afterPath="$PROJECT_DIR$/processing/F_lines_delete.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utility_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/utility_functions.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,6 +33,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "kaetosh"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/kaetosh/Flat_table_account_analysis.git",
+    "accountId": "36e175ae-508b-400a-969b-6609cebf3523"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -34,6 +59,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.B_handle_missing_values_in_account.executor": "Run",
+    "Python.analysis_deviations.executor": "Run",
     "Python.logger.executor": "Run",
     "Python.main.executor": "Run",
     "Python.preprocessing_openpyxl.executor": "Run",
@@ -92,7 +118,15 @@
       <option name="project" value="LOCAL" />
       <updated>1724579338618</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="1">
+      <option name="closed" value="true" />
+      <created>1724580992544</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1724580992544</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

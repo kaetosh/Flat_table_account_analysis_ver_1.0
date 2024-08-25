@@ -25,5 +25,6 @@ def corr_account_col(df, file_excel):
     df['Корр_счет'] = df['Корр_счет'].ffill()
     logger.info(f'{file_excel}: добавили столбец с корр.счетом')
 
+
     ns = types.SimpleNamespace(**locals())
     return ns
