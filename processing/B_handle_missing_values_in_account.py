@@ -10,6 +10,7 @@ from utility_functions import is_accounting_code
 
 
 def handle_missing_values_in_account(df, file_excel):
+    result = False
     current_ind = None
     # Приводим значения столбца Счет к числовому, в т.ч. и NaN
     # (получим np.nan, чтобы работал метод ffill), строковые не трогаем
@@ -29,7 +30,6 @@ def handle_missing_values_in_account(df, file_excel):
                 continue
             else:
                 current_ind = index  # иначе запоминаем индекс этого значения
-    logger.info('current_ind:', current_ind)
 
     # если найдено пустое значение
     if current_ind and (isinstance(df.loc[current_ind, 'Счет'], float)):
@@ -38,5 +38,9 @@ def handle_missing_values_in_account(df, file_excel):
         # проверим все строки данного уровня, если они не заполнены, ставим в них Не_заполнено
         df.loc[:, 'Счет'] = np.where((df['Уровень'] == level_empty_value)
                                      & (df['Счет'].isna()), 'Не_указано', df['Счет'])
+        result = True
     logger.info(f'{file_excel}: добавили столбец с наименованием файла (для различения наименований компаний)')
     df['Счет'] = df['Счет'].ffill()  # пустые значения в данном столбце заполнили последними непустыми значениями
+    df['Счет'] = df['Счет'].apply(lambda x: str(x))
+    df['Счет'] = df['Счет'].apply(lambda x: f'0{x}' if (len(str(x)) == 1 and is_accounting_code(x)) else x)
+    return result
