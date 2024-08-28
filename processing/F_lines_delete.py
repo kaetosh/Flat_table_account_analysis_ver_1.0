@@ -38,6 +38,7 @@ def lines_delete(df, sign_1c, file_excel, debet_name, credit_name):
     df_delete = df_delete.dropna(subset=[sign_1c]).copy()
     df_delete = df_delete[df_delete['Курсив'] == 0][[sign_1c, 'Корр_счет']]
     unique_df = df_delete.drop_duplicates(subset=[sign_1c, 'Корр_счет'])
+    unique_df = unique_df[~unique_df['Корр_счет'].isin([None])]
 
     all_acc_dict = {}
     for item in list(unique_df['Корр_счет']):
@@ -49,15 +50,35 @@ def lines_delete(df, sign_1c, file_excel, debet_name, credit_name):
 
     # счета с субсчетами
     acc_with_sub = [i for i in all_acc_dict if is_parent(i, all_acc_dict)]
+    logger.info(f'\nсчета c субсчетами в нашем анализе: {acc_with_sub}')
 
     clean_acc = [i for i in all_acc_dict if i not in acc_with_sub]
+    logger.info(f'\nочистка 1: {clean_acc}')
     clean_acc = [i for i in clean_acc if all_acc_dict[i] == 1]
+    logger.info(f'\nочистка 2: {clean_acc}')
     del_acc = [i for i in all_acc_dict if i not in clean_acc]
+    
+    # список из 94 счетов, т.к основной счет 94.Н в серых 1с
+    # к нему открыты субсчета 94, 94.01, 94.04
+    # поэтому для серый 1с оставляем только 94.Н
+    # в желтых 1с и так 94 счет без субсчетов
+    acc_with_94 = [i for i in all_acc_dict if '94' in i]
+    del_acc_with_94 = []
+    if '94.Н' in acc_with_94:
+        del_acc_with_94 = [i for i in acc_with_94 if i !='94.Н']
+    del_acc = list(set(del_acc + del_acc_with_94))
+    
+    
+    
+    logger.info(f'n\финал для удаления: {del_acc}')
+    
+    df[sign_1c] = df[sign_1c].apply(lambda x: str(x))
 
     df = df[
         ~df[sign_1c].isin(exclude_values) &  # Исключение определенных значений (Сальдо, Оборот и т.д.)
         ~df[sign_1c].isin(del_acc) # Исключение счетов, по которым есть расшифровка субконто (60, 60.01 и т.д.)
         ].copy()
+    
     df = df[df['Курсив'] == 0].copy()
     df[sign_1c] = df[sign_1c].astype(str)
 
@@ -68,12 +89,13 @@ def lines_delete(df, sign_1c, file_excel, debet_name, credit_name):
         if all(df[i].apply(is_accounting_code)):
             shiftable_level = i
             break
-
+        
     df['Субсчет'] = df.apply(
-        lambda row: row[shiftable_level] if row[shiftable_level] != 7 else f"0{row[shiftable_level]}",
+        lambda row: row[shiftable_level] if (str(row[shiftable_level])!= '7') else f"0{row[shiftable_level]}",
         axis=1)  # 07 без субсчетов
     df['Субсчет'] = df.apply(
         lambda row: 'Без_субсчетов' if not is_accounting_code(row['Субсчет']) else row['Субсчет'], axis=1)
+    
     if sign_1c == 'Кор.счет':
         df.rename(columns={sign_1c: 'Субконто_корр_счета', 'Счет': 'Аналитика'}, inplace=True)
     else:
@@ -100,5 +122,5 @@ def lines_delete(df, sign_1c, file_excel, debet_name, credit_name):
     df = df.dropna(subset=['С кред. счетов', 'В дебет счетов'], how='all')
     df = df[(df['С кред. счетов'] != 0) | (df['С кред. счетов'].notna())]
     df = df[(df['В дебет счетов'] != 0) | (df['В дебет счетов'].notna())]
-
+    
     return df
