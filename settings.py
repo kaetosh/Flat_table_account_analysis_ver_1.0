@@ -1,4 +1,4 @@
-# List of values to exclude
+# список значений, строки с которыми будут исключены из таблиц
 exclude_values = ['Нач.сальдо',
                   'Оборот',
                   'Кон.сальдо',
@@ -7,5 +7,8 @@ exclude_values = ['Нач.сальдо',
                   'Кор. Субконто1']
 
 
-# the path to the folder with Excel files
-folder_path = '/home/kaetosh/yandex-disk/automation_processing_1C/Analyst'
+# путь к папке с обрабатываемыми файлами excel
+folder_path = '/Users/a.karabedyan/Documents/JUPYTER_NOTEBOOKS/Анализ'
+
+# значение в строке, которую будем использовать в качестве заголовков
+target_value = 'Счет'
