@@ -22,3 +22,13 @@ def shiftable_level(df):
         if all(df[n].apply(is_accounting_code)):
             df['Субсчет'] = df[n].copy()
             break
+    
+    
+    for p in list_lev:
+        if not all(df[p].apply(is_accounting_code)):
+            df['Аналитика'] = df['Аналитика'].where(df['Аналитика']!= 'Не_указано', df[p])
+            break
+ 
+    df['Субсчет'] = df.apply(
+        lambda row: row['Субсчет'] if (str(row['Субсчет'])!= '7') else f"0{row['Субсчет']}",
+        axis=1)  # 07 без субсчетов
