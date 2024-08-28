@@ -10,7 +10,18 @@ def revolutions_before_processing(df, file_excel, sign_1c, debet_name, credit_na
     df_for_check['Кор.счет_ЧЕК'] = df_for_check['Кор.счет_ЧЕК'].fillna('')
     df_for_check['Кор.счет_ЧЕК'] = df_for_check['Кор.счет_ЧЕК'].astype(str)
     df_for_check['Кор.счет_ЧЕК'] = df_for_check['Кор.счет_ЧЕК'].apply(lambda x: f'0{x}' if len(x) == 1 else x)
-    df_for_check = df_for_check[df_for_check['Кор.счет_ЧЕК'].str.match(r'^\d{2}$')].copy()
+    
+    if '94.Н' in df_for_check['Кор.счет_ЧЕК'].values:
+        df_for_check = df_for_check[
+        (df_for_check['Кор.счет_ЧЕК'] == '94.Н') | 
+        (df_for_check['Кор.счет_ЧЕК'].str.match(r'^\d{2}$') & 
+         ~df_for_check['Кор.счет_ЧЕК'].isin([str(x) for x in range(94, 95)]))
+    ].copy()
+    
+    else:
+        df_for_check = df_for_check[df_for_check['Кор.счет_ЧЕК'].str.match(r'^\d{2}$')].copy()
+    
+    df_for_check['Кор.счет_ЧЕК'] = df_for_check['Кор.счет_ЧЕК'].replace('94.Н', '94')
     df_for_check = df_for_check.groupby('Кор.счет_ЧЕК')[[debet_name, credit_name]].sum().copy()
     df_for_check = df_for_check.reset_index()
     if sign_1c != 'Кор.счет':
