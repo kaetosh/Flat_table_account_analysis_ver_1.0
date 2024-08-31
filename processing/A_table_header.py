@@ -7,6 +7,8 @@ from logger import logger
 
 
 def table_header(df, file_excel):
+    
+    
 
     # получаем индекс строки, содержащей target_value (значение)
     index_for_columns = df.index[df.apply(lambda row: target_value in row.values, axis=1)][0]
@@ -19,6 +21,8 @@ def table_header(df, file_excel):
 
     # удаляем данные выше строки с именами столбцов таблицы (наименование отчета, период и т.д.)
     df.drop(df.index[0:(index_for_columns + 1)], inplace=True)
+    
+    
 
     # переименуем первые два столбца
     df.columns.values[0] = 'Уровень'
@@ -30,6 +34,8 @@ def table_header(df, file_excel):
     if 'nan' in df.columns.to_list():
         df.drop(columns=['nan'], inplace=True)
     logger.info(f'{file_excel}: удалили пустые строки и столбцы')
+    
+
 
     # Добавим столбец с названием файла
     df['Исх.файл'] = file_excel
