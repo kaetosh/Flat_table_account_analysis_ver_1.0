@@ -3,7 +3,7 @@ from utility_functions import is_accounting_code
 
 
 def shiftable_level(df):
-    for j in range(3):
+    for j in range(5):
         list_lev = [i for i in df.columns.to_list() if 'Level' in i]
         for i in list_lev:
             # если в столбце есть и субсчет и субконто, нужно выравнивать столбцы
