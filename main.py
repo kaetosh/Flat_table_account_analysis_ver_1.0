@@ -34,6 +34,7 @@ dict_df_check = {} # для таблиц сверки оборотов до и �
 
 
 def main_process():
+    empty_files = []
        
     for file_excel in excel_files:
         # предварительная обработка с помощью openpyxl (снятие объединения, уровни)
@@ -57,6 +58,7 @@ def main_process():
         # если иерархии нет, то файл пустой, пропускаем его
         if horizontal_structure(df, file_excel):
             print(f'{file_excel}: пустой, пропускаем его')
+            empty_files.append(f'{file_excel}')
             continue
         else:
             print(f'{file_excel}: разнесли иерархию в горизонтальную плоскость')
@@ -69,6 +71,10 @@ def main_process():
         # потом сравним данные с итоговой таблицей, чтобы убедиться в правильности результата
         df_for_check = revolutions_before_processing(df, file_excel, ns.sign_1c, ns.debet_name, ns.credit_name)
         print(f'{file_excel}: сформировали вспомогательную таблицу с оборотами до обработки')
+        if df_for_check.empty:
+            print(f'{file_excel}: пустой, пропускаем его')
+            empty_files.append(f'{file_excel}')
+            continue
 
         # удаляем дублирующие строки (родительские счета, счета по которым есть аналитика, обороты, сальдо и т.д.)
         df = lines_delete(df, ns.sign_1c, file_excel, ns.debet_name, ns.credit_name)
@@ -119,8 +125,8 @@ def main_process():
     try:
         result.to_excel('summary_files/СВОД_анализ_счетов.xlsx', index=False)
         result_check.to_excel('summary_files/СВОД_ОТКЛ_анализ_счетов.xlsx', index=False)
-        logger.info('\nФайл успешно выгружен в excel, скрипт завершен!')
-        print('\nФайл успешно выгружен в excel, скрипт завершен!')
+        logger.info('\nФайл успешно выгружен в excel')
+        print('\nФайл успешно выгружен в excel')
     except Exception as e:
         print(f'\nОшибка при сохранении файла в excel: {e}')
         logger.error(f'\nОшибка при сохранении файла в excel: {e}')
@@ -136,10 +142,21 @@ def main_process():
     
     try:
         os.rmdir(folder_path_converted)
+        print('Удалены временные файлы')
+        logger.info('Удалены временные файлы')
     except OSError as e:
+        logger.info(f"Error: {e.filename} - {e.strerror}")
         print(f"Error: {e.filename} - {e.strerror}")
+    
+    if empty_files:
+        logger.info(f'Анализы счетов без оборотов ({len(empty_files)}): {empty_files}')
+        print(f'Анализы счетов без оборотов ({len(empty_files)}): {empty_files}')
+    
+    logger.info('Скрипт завершен!!!')
+    print('Скрипт завершен!!!')
 
-    print('Удалены временные файлы')
+    
+    
 
 if __name__ == "__main__":
     main_process()
