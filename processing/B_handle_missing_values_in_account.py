@@ -14,7 +14,13 @@ def handle_missing_values_in_account(df, file_excel):
     current_ind = None
     # Приводим значения столбца Счет к числовому, в т.ч. и NaN
     # (получим np.nan, чтобы работал метод ffill), строковые не трогаем
+    
+    
+    
     df['Счет'] = df['Счет'].apply(lambda x: pd.to_numeric(x) if not isinstance(x, str) else x)
+    
+   
+    
     # проходим по значениям столбца Счет
     for index, value in df['Счет'].items():
         # Если значение float (точнее np.nan), т.е. пустое или счет бухучета
@@ -40,7 +46,13 @@ def handle_missing_values_in_account(df, file_excel):
                                      & (df['Счет'].isna()), 'Не_указано', df['Счет'])
         result = True
     logger.info(f'{file_excel}: добавили столбец с наименованием файла (для различения наименований компаний)')
+    
+    
+    
     df['Счет'] = df['Счет'].ffill()  # пустые значения в данном столбце заполнили последними непустыми значениями
     df['Счет'] = df['Счет'].apply(lambda x: str(x))
     df['Счет'] = df['Счет'].apply(lambda x: f'0{x}' if (len(str(x)) == 1 and is_accounting_code(x)) else x)
+    
+
+    
     return result
