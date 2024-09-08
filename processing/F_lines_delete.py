@@ -33,7 +33,7 @@ def is_parent(account, accounts):
             return True
     return False
 
-def lines_delete(df, sign_1c, file_excel, debet_name, credit_name):
+def lines_delete(df, sign_1c, file_excel):
     df_delete = df[~df[sign_1c].isin(exclude_values)]
     df_delete = df_delete.dropna(subset=[sign_1c]).copy()
     df_delete = df_delete[df_delete['Курсив'] == 0][[sign_1c, 'Корр_счет']]
@@ -60,7 +60,7 @@ def lines_delete(df, sign_1c, file_excel, debet_name, credit_name):
     
     # список из 94 счетов, т.к основной счет 94.Н в серых 1с
     # к нему открыты субсчета 94, 94.01, 94.04
-    # поэтому для серый 1с оставляем только 94.Н
+    # поэтому для серой 1с оставляем только 94.Н
     # в желтых 1с и так 94 счет без субсчетов
     acc_with_94 = [i for i in all_acc_dict if '94' in i]
     del_acc_with_94 = []

@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 28 16:36:46 2024
-
-@author: a.karabedyan
-"""
+# # -*- coding: utf-8 -*-
+# """
+# Created on Wed Aug 28 16:36:46 2024
+#
+# @author: a.karabedyan
+# """
 
 import os
 import win32com.client
@@ -42,4 +42,4 @@ def save_as_xlsx_not_alert():
     # Display a message box
     logger.info('Исходные файлы Excel пересохранены.')
     print('Все исходные файлы Excel пересохранены.')
-    
+

@@ -19,7 +19,7 @@ def horizontal_structure(df, file_excel):
     # получим максимальный уровень иерархии
     max_level = df['Уровень'].max()
     
-    if (max_level == 0 or df.empty):
+    if max_level == 0 or df.empty:
         logger.info(f'{file_excel}: файл пустой, не включаем в свод')
         return True
 

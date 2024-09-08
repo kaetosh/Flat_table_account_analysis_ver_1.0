@@ -2,7 +2,8 @@ import os
 import sys
 import pandas as pd
 
-from settings import folder_path
+from dialog_user import select_folder
+#from settings import folder_path
 from logger import logger
 
 from preprocessing_openpyxl import preprocessing_file_excel
@@ -20,6 +21,7 @@ from processing.G_shiftable_level import shiftable_level
 
 
 save_as_xlsx_not_alert()
+folder_path = select_folder()
 folder_path_converted = os.path.join(folder_path, "ConvertedFiles")
 files = os.listdir(folder_path_converted)
 excel_files = [file for file in files if file.endswith('.xlsx') or file.endswith('.xls')]
@@ -77,7 +79,7 @@ def main_process():
             continue
 
         # удаляем дублирующие строки (родительские счета, счета по которым есть аналитика, обороты, сальдо и т.д.)
-        df = lines_delete(df, ns.sign_1c, file_excel, ns.debet_name, ns.credit_name)
+        df = lines_delete(df, ns.sign_1c, file_excel)
         print(f'{file_excel}: удалили дублирующие строки')
         
         # Сдвиг столбцов, чтобы субсчета располагались в одном столбце

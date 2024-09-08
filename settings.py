@@ -8,7 +8,7 @@ exclude_values = ['Нач.сальдо',
 
 
 # путь к папке с обрабатываемыми файлами excel
-folder_path = '/Users/a.karabedyan/Documents/JUPYTER_NOTEBOOKS/Анализ'
+folder_path = '/home/kaetosh/yandex-disk/automation_processing_1C/Analyst'
 
 # значение в строке, которую будем использовать в качестве заголовков
 target_value = 'Счет'
