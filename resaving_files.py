@@ -9,37 +9,55 @@ import os
 import win32com.client
 
 from logger import logger
-from settings import folder_path
+#from settings import folder_path
 
-def save_as_xlsx_not_alert():
+def save_as_xlsx_not_alert(folder_path):
 
-    # Create a new folder for converted files
+    # Нормализуем путь
+    folder_path = os.path.normpath(folder_path)
     sNewFolderPath = os.path.join(folder_path, "ConvertedFiles")
+    
     if not os.path.exists(sNewFolderPath):
         os.makedirs(sNewFolderPath)
 
-    # Iterate through all files in the selected folder
+    # Итерируемся по всем файлам в выбранной папке
     for oFile in os.listdir(folder_path):
-        # Check if the file is an Excel file
+        # Проверяем, является ли файл Excel файлом
         if oFile.endswith(('.xls', '.xlsx')):
-            # Open the Excel file
-            excel = win32com.client.Dispatch('Excel.Application')
-            excel.Visible = False  # Hide Excel application
-            excel.DisplayAlerts = False  # Disable alerts
-            wb = excel.Workbooks.Open(os.path.join(folder_path, oFile))
+            # Полный путь к файлу
+            file_path = os.path.join(folder_path, oFile)
+            
+            # Проверка на существование файла
+            if not os.path.exists(file_path):
+                print(f"Файл не найден: {file_path}")
+                continue
+            
+            try:
+                # Открываем Excel файл
+                excel = win32com.client.Dispatch('Excel.Application')
+                excel.Visible = False  # Скрыть приложение Excel
+                excel.DisplayAlerts = False  # Отключить предупреждения
 
-            # Save the file as xlsx
-            wb.SaveAs(os.path.join(sNewFolderPath, os.path.splitext(oFile)[0] + '.xlsx'), FileFormat=51)
+                wb = excel.Workbooks.Open(file_path)
 
-            # Close the workbook without saving changes
-            wb.Close(SaveChanges=False)
-            logger.info(f'Исходный файл {oFile} пересохранен.')
-            print(f'Исходный файл {oFile} пересохранен.')
+                # Сохраняем файл как xlsx
+                new_file_path = os.path.join(sNewFolderPath, os.path.splitext(oFile)[0] + '.xlsx')
+                wb.SaveAs(new_file_path, FileFormat=51)
 
-    # Quit Excel application
-    excel.Quit()
+                # Закрываем книгу без сохранения изменений
+                wb.Close(SaveChanges=False)
+                logger.info(f'Исходный файл {oFile} пересохранен.')
+                print(f'Исходный файл {oFile} пересохранен.')
 
-    # Display a message box
+            except Exception as e:
+                print(f"Ошибка при обработке файла {oFile}: {e}")
+                logger.error(f"Ошибка при обработке файла {oFile}: {e}")
+
+            finally:
+                # Убедитесь, что Excel будет закрыт
+                excel.Quit()
+
+    # Отображаем сообщение
     logger.info('Исходные файлы Excel пересохранены.')
     print('Все исходные файлы Excel пересохранены.')
 

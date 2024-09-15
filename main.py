@@ -19,10 +19,10 @@ from processing.E_corr_account_column import corr_account_col
 from processing.F_lines_delete import lines_delete
 from processing.G_shiftable_level import shiftable_level
 
-#new commit_2
 
-save_as_xlsx_not_alert()
 folder_path = select_folder()
+save_as_xlsx_not_alert(folder_path)
+folder_path = os.path.normpath(folder_path)
 folder_path_converted = os.path.join(folder_path, "ConvertedFiles")
 files = os.listdir(folder_path_converted)
 excel_files = [file for file in files if file.endswith('.xlsx') or file.endswith('.xls')]
@@ -126,8 +126,14 @@ def main_process():
         logger.error(f'\n\nОшибка при объединении файлов {e}')
     # выгружаем в excel
     try:
-        result.to_excel('summary_files/СВОД_анализ_счетов.xlsx', index=False)
-        result_check.to_excel('summary_files/СВОД_ОТКЛ_анализ_счетов.xlsx', index=False)
+        summary_folder = os.path.join(folder_path, "summary_files")
+        folder_path_summary_files = os.path.join(summary_folder, "СВОД_анализ_счетов.xlsx")
+        #folder_path_summary_files = os.path.join(folder_path, "summary_files/СВОД_анализ_счетов.xlsx")
+        if not os.path.exists(summary_folder):
+            os.makedirs(summary_folder)
+        result.to_excel(folder_path_summary_files, index=False)
+        folder_path_result_check = os.path.join(folder_path, "summary_files/СВОД_ОТКЛ_анализ_счетов.xlsx")
+        result_check.to_excel(folder_path_result_check, index=False)
         logger.info('\nФайл успешно выгружен в excel')
         print('\nФайл успешно выгружен в excel')
     except Exception as e:
