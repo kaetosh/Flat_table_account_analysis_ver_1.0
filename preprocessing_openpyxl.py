@@ -1,3 +1,4 @@
+import os
 import sys
 
 import openpyxl
@@ -6,7 +7,6 @@ from logger import logger
 
 def preprocessing_file_excel(path_file_excel):
     file_excel = path_file_excel.split('/')[-1]
-    file_excel_treatment = f'preprocessing_files/preprocessing_{file_excel}'
     try:
         workbook = openpyxl.load_workbook(path_file_excel)
     except Exception as e:
@@ -63,6 +63,9 @@ def preprocessing_file_excel(path_file_excel):
         new_cell = sheet.cell(row=row_index, column=2)
         new_cell.value = 1 if kor_schet_cell.font and kor_schet_cell.font.italic else 0
 
+    file_excel_treatment = f'preprocessing_files/preprocessing_{file_excel}'
+    if not os.path.exists('preprocessing_files'):
+        os.makedirs('preprocessing_files')
     workbook.save(file_excel_treatment)
     workbook.close()
     logger.info(f'\n{file_excel}: сняли объединение ячеек, проставли уровни группировок и признак курсив в ячейках')

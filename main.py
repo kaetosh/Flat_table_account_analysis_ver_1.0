@@ -1,9 +1,10 @@
 import os
+import shutil
 import sys
 import pandas as pd
+from pyfiglet import Figlet
 
 from dialog_user import select_folder
-#from settings import folder_path
 from logger import logger
 
 from preprocessing_openpyxl import preprocessing_file_excel
@@ -19,6 +20,12 @@ from processing.E_corr_account_column import corr_account_col
 from processing.F_lines_delete import lines_delete
 from processing.G_shiftable_level import shiftable_level
 
+
+f1 = Figlet(font='ansi_shadow', justify="center")
+f2 = Figlet(font='ansi_shadow', justify="center")
+f3 = Figlet(font='soft', justify="center")
+
+print(f1.renderText("Flat table"), f2.renderText("account analysis"), f3.renderText("ver 1.0"))
 
 folder_path = select_folder()
 save_as_xlsx_not_alert(folder_path)
@@ -38,6 +45,7 @@ dict_df_check = {} # для таблиц сверки оборотов до и �
 
 def main_process():
     empty_files = []
+
        
     for file_excel in excel_files:
         # предварительная обработка с помощью openpyxl (снятие объединения, уровни)
@@ -139,11 +147,23 @@ def main_process():
     except Exception as e:
         print(f'\nОшибка при сохранении файла в excel: {e}')
         logger.error(f'\nОшибка при сохранении файла в excel: {e}')
-        
+
     folder_path_del_files = 'preprocessing_files'
-    for filename in os.listdir(folder_path_del_files):
-        file_path = os.path.join(folder_path_del_files, filename)
-        os.remove(file_path)
+
+    # Убедитесь, что папка существует перед ее удалением
+    if os.path.exists(folder_path_del_files):
+        # Удаляем файлы из папки
+        for filename in os.listdir(folder_path_del_files):
+            file_path = os.path.join(folder_path_del_files, filename)
+            # Удаляем файл
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
+        # Удаляем папку
+        shutil.rmtree(folder_path_del_files)
+        print(f"Папка и ее содержимое {folder_path_del_files} были успешно удалены.")
+    else:
+        print(f"Папка {folder_path_del_files} не существует.")
     
     for filename in os.listdir(folder_path_converted):
         file_path = os.path.join(folder_path_converted, filename)
@@ -169,3 +189,5 @@ def main_process():
 
 if __name__ == "__main__":
     main_process()
+    print("Нажмите Enter для выхода.")
+    input()
