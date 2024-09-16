@@ -11,7 +11,7 @@ from preprocessing_openpyxl import preprocessing_file_excel
 from resaving_files import save_as_xlsx_not_alert
 
 from analysis_deviations import revolutions_before_processing, revolutions_after_processing
-
+#https://disk.yandex.ru/d/Xe0MNB-CnPXDaA
 
 from processing.A_table_header import table_header
 from processing.B_handle_missing_values_in_account import handle_missing_values_in_account
