@@ -10,7 +10,7 @@ def preprocessing_file_excel(path_file_excel):
     try:
         workbook = openpyxl.load_workbook(path_file_excel)
     except Exception as e:
-        logger.error(f'''\n{file_excel}: Косячный файл-выгрузка из 1с, пересохраните этот файл и снова запустите скрипт.
+        logger.error(f'''{file_excel}: Косячный файл-выгрузка из 1с, пересохраните этот файл и снова запустите скрипт.
                       Или открыт обрабатываемый файл. Закройте этот файл и снова запустите скрипт.
                       Ошибка: {e}''')
         sys.exit()
@@ -68,5 +68,5 @@ def preprocessing_file_excel(path_file_excel):
         os.makedirs('preprocessing_files')
     workbook.save(file_excel_treatment)
     workbook.close()
-    logger.info(f'\n{file_excel}: сняли объединение ячеек, проставли уровни группировок и признак курсив в ячейках')
+    logger.info(f'{file_excel}: сняли объединение ячеек, проставли уровни группировок и признак курсив в ячейках')
     return file_excel_treatment

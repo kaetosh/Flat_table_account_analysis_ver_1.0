@@ -32,7 +32,7 @@ def handle_missing_values_in_account(df, file_excel):
                 if isinstance(df.loc[current_ind, 'Счет'], float):
                     break  # выходим из цикла
             except KeyError:
-                logger.info(f'ERROR: {current_ind}')
+                #logger.error(f'ERROR: {current_ind}')
                 continue
             else:
                 current_ind = index  # иначе запоминаем индекс этого значения

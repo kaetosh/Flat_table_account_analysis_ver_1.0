@@ -46,16 +46,16 @@ def lines_delete(df, sign_1c, file_excel):
             all_acc_dict[item] += 1
         else:
             all_acc_dict[item] = 1
-    logger.info(f'\nсчета и субсчета в нашем анализе и их количество: {all_acc_dict}')
+    logger.debug(f'\nсчета и субсчета в нашем анализе и их количество: {all_acc_dict}')
 
     # счета с субсчетами
     acc_with_sub = [i for i in all_acc_dict if is_parent(i, all_acc_dict)]
-    logger.info(f'\nсчета c субсчетами в нашем анализе: {acc_with_sub}')
+    logger.debug(f'\nсчета c субсчетами в нашем анализе: {acc_with_sub}')
 
     clean_acc = [i for i in all_acc_dict if i not in acc_with_sub]
-    logger.info(f'\nочистка 1: {clean_acc}')
+    logger.debug(f'\nочистка 1: {clean_acc}')
     clean_acc = [i for i in clean_acc if all_acc_dict[i] == 1]
-    logger.info(f'\nочистка 2: {clean_acc}')
+    logger.debug(f'\nочистка 2: {clean_acc}')
     del_acc = [i for i in all_acc_dict if i not in clean_acc]
     
     # список из 94 счетов, т.к основной счет 94.Н в серых 1с
@@ -70,7 +70,7 @@ def lines_delete(df, sign_1c, file_excel):
     
     
     
-    logger.info(f'n\финал для удаления: {del_acc}')
+    logger.debug(f'n\финал для удаления: {del_acc}')
     
     df[sign_1c] = df[sign_1c].apply(lambda x: str(x))
 

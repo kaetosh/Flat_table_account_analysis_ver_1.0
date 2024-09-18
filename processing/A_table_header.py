@@ -7,9 +7,6 @@ from logger import logger
 
 
 def table_header(df, file_excel):
-    
-    
-
     # получаем индекс строки, содержащей target_value (значение)
     index_for_columns = df.index[df.apply(lambda row: target_value in row.values, axis=1)][0]
 

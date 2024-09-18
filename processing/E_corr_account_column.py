@@ -20,8 +20,6 @@ def corr_account_col(df, file_excel):
     
     
     
-    
-    
     # добавим нолик, если счет до 10, чтобы было 01 02 04 05 07 08 09
     df['Корр_счет'] = df['Корр_счет'].apply(lambda x: f'0{x}' if len(str(x)) == 1 else x)
     

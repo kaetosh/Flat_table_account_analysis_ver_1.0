@@ -1,63 +1,64 @@
-# # -*- coding: utf-8 -*-
-# """
-# Created on Wed Aug 28 16:36:46 2024
-#
-# @author: a.karabedyan
-# """
-
-import os
+import sys
 import win32com.client
+from pathlib import Path
 
 from logger import logger
-#from settings import folder_path
 
-def save_as_xlsx_not_alert(folder_path):
+def save_as_xlsx_not_alert(folder_path: str):
 
-    # Нормализуем путь
-    folder_path = os.path.normpath(folder_path)
-    sNewFolderPath = os.path.join(folder_path, "ConvertedFiles")
-    
-    if not os.path.exists(sNewFolderPath):
-        os.makedirs(sNewFolderPath)
+    folder_path = Path(folder_path)
+    if not folder_path.is_dir():
+        logger.error(f"Неверный путь: {folder_path}. Скрипт завершен неудачно")
+        sys.exit()
 
-    # Итерируемся по всем файлам в выбранной папке
-    for oFile in os.listdir(folder_path):
-        # Проверяем, является ли файл Excel файлом
-        if oFile.endswith(('.xls', '.xlsx')):
-            # Полный путь к файлу
-            file_path = os.path.join(folder_path, oFile)
-            
-            # Проверка на существование файла
-            if not os.path.exists(file_path):
-                print(f"Файл не найден: {file_path}")
+    excel_files_found = False
+    sNewFolderPath = folder_path / "ConvertedFiles"
+
+    for oFile in folder_path.iterdir():
+        if oFile.suffix.lower() in ('.xls', '.xlsx'):
+            excel_files_found = True
+            break
+
+    if excel_files_found:
+        try:
+            sNewFolderPath.mkdir(exist_ok=True)
+        except OSError as e:
+            logger.error(f"Ошибка создания новой папки: {e}. Скрипт завершен неудачно")
+            sys.exit()
+    else:
+        logger.error("Файлы Excel не найдены. Скрипт завершен неудачно")
+        sys.exit()
+
+    for oFile in folder_path.iterdir():
+        if oFile.suffix.lower() in ('.xls', '.xlsx'):
+            file_path = oFile.resolve()
+
+            if not file_path.is_file():
+                logger.error(f"Файл не найден: {file_path}. Скрипт завершен неудачно")
                 continue
-            
+
+            excel_app = None
             try:
-                # Открываем Excel файл
-                excel = win32com.client.Dispatch('Excel.Application')
-                excel.Visible = False  # Скрыть приложение Excel
-                excel.DisplayAlerts = False  # Отключить предупреждения
+                excel_app = win32com.client.Dispatch('Excel.Application')
+                excel_app.Visible = False
+                excel_app.DisplayAlerts = False
 
-                wb = excel.Workbooks.Open(file_path)
+                wb = excel_app.Workbooks.Open(str(file_path))
+                new_file_path = sNewFolderPath / (oFile.stem + '.xlsx')
+                wb.SaveAs(str(new_file_path), FileFormat=51)
+                logger.info(f'Файл {oFile.name} конвертирован {new_file_path.name}.')
 
-                # Сохраняем файл как xlsx
-                new_file_path = os.path.join(sNewFolderPath, os.path.splitext(oFile)[0] + '.xlsx')
-                wb.SaveAs(new_file_path, FileFormat=51)
-
-                # Закрываем книгу без сохранения изменений
                 wb.Close(SaveChanges=False)
-                logger.info(f'Исходный файл {oFile} пересохранен.')
-                print(f'Исходный файл {oFile} пересохранен.')
+                excel_app.Quit()
 
             except Exception as e:
-                print(f"Ошибка при обработке файла {oFile}: {e}")
-                logger.error(f"Ошибка при обработке файла {oFile}: {e}")
+                logger.error(f"Ошибка обработки файла {oFile.name}: {e}")
 
             finally:
-                # Убедитесь, что Excel будет закрыт
-                excel.Quit()
+                if excel_app is not None:
+                    excel_app.Quit()
 
-    # Отображаем сообщение
-    logger.info('Исходные файлы Excel пересохранены.')
-    print('Все исходные файлы Excel пересохранены.')
-
+    if sNewFolderPath is not None and not any(sNewFolderPath.iterdir()):
+        logger.info("Преобразованные файлы не найдены. Скрипт завершен неудачно")
+        sNewFolderPath.rmdir()
+        sys.exit()
