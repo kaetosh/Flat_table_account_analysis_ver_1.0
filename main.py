@@ -26,7 +26,7 @@ f2 = Figlet(font='ansi_shadow', justify="center")
 
 print(f1.renderText("Flat table generator"), f2.renderText("from 1C account analyses"))
 logger.info(f"Сейчас будет предложено выбрать папку с файлами Excel - анализами счетов.")
-time.sleep(3)
+time.sleep(2)
 folder_path = os.path.normpath(select_folder())
 logger.info(f"Выбрана папка {folder_path}, проверим наличие файлов Excel...")
 save_as_xlsx_not_alert(folder_path)
