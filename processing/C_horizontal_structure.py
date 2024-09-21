@@ -3,6 +3,8 @@
 чтобы уровни выше по иерархии были представлены в горизонтальной форме.
 """
 from logger import logger
+from utility_functions import catch_errors
+
 
 # A function for transferring levels to a horizontal orientation
 def fill_level(row, prev_value, level) -> float:
@@ -11,6 +13,7 @@ def fill_level(row, prev_value, level) -> float:
     else:
         return prev_value
 
+@catch_errors()
 def horizontal_structure(df, file_excel):
 
     # Инициализация переменной для хранения предыдущего значения
@@ -30,5 +33,4 @@ def horizontal_structure(df, file_excel):
             if row['Уровень'] == i:
                 prev_value = row['Счет']
             df.at[j, f'Level_{i}'] = prev_value
-    logger.info(f'{file_excel}: разнесли уровни в горизонтальную иерархию')
     return False

@@ -1,19 +1,21 @@
 import os
-import sys
-
 import openpyxl
+from pathlib import Path
+
 from logger import logger
+import config
+from utility_functions import terminate_script, catch_errors
 
 
-def preprocessing_file_excel(path_file_excel):
-    file_excel = path_file_excel.split('/')[-1]
+@catch_errors()
+def preprocessing_file_excel(path_file_excel: str):
+    file_excel =Path(path_file_excel).name
+    workbook = None
     try:
         workbook = openpyxl.load_workbook(path_file_excel)
     except Exception as e:
-        logger.error(f'''{file_excel}: Косячный файл-выгрузка из 1с, пересохраните этот файл и снова запустите скрипт.
-                      Или открыт обрабатываемый файл. Закройте этот файл и снова запустите скрипт.
-                      Ошибка: {e}''')
-        sys.exit()
+        terminate_script(f'''{file_excel}: Ошибка обработки файла. Возможно открыт обрабатываемый файл. Закройте этот файл и снова запустите скрипт.
+                              Ошибка: {e}''')
 
     sheet = workbook.active
 
@@ -33,6 +35,8 @@ def preprocessing_file_excel(path_file_excel):
     sheet.insert_cols(idx=2)
     sheet['B1'] = "Курсив"
 
+    kor_schet_col_index =None
+
     for row in sheet.iter_rows(values_only=True):
         if "Счет" in row:
             try:
@@ -41,21 +45,18 @@ def preprocessing_file_excel(path_file_excel):
                 try:
                     kor_schet_col_index = row.index("Кор. Счет") + 1
                 except ValueError:
-                    logger.error(f'''\n{file_excel}: Не обнаружен столбец 'Кор.счет' или 'Кор. Счет'.
+                    terminate_script(f'''{file_excel}: Не обнаружен столбец 'Кор.счет' или 'Кор. Счет'.
                     Убедитесь, что обрабатываемый файл является Анализом счета.
                     Иначе сообщите разработчику,
-                    если имя столбца с корреспондирующими счетами отличается от предложенного выше''')
-                    workbook.close()
-                    sys.exit()
+                    если имя столбца с корреспондирующими счетами отличается от Кор.счет или Кор. Счет''')
             break
     else:
-        logger.error(f'''\n{file_excel}: Не обнаружена строка в файле, содержащая поле 'Счет'.
+
+        terminate_script(f'''{file_excel}: Не обнаружена строка в файле, содержащая поле 'Счет'.
                             Убедитесь, что обрабатываемый файл является Анализом счета.
-                            Также возможно в анализе счета не указана группировка. 
-                            Иначе сообщите разработчику,
-                            если имя столбца отличается от предложенного выше''')
-        workbook.close()
-        sys.exit()
+                            Также возможно, что в анализе счета не указана группировка. 
+                            Сообщите разработчику,
+                            если имя столбца отличается от Счет''')
 
     # Мы заполняем новый столбец значениями, основанными на форматировании ячеек курсивом
     for row_index in range(2, sheet.max_row + 1):  # We start with 2 to skip the title
@@ -63,10 +64,10 @@ def preprocessing_file_excel(path_file_excel):
         new_cell = sheet.cell(row=row_index, column=2)
         new_cell.value = 1 if kor_schet_cell.font and kor_schet_cell.font.italic else 0
 
-    file_excel_treatment = f'preprocessing_files/preprocessing_{file_excel}'
-    if not os.path.exists('preprocessing_files'):
-        os.makedirs('preprocessing_files')
+    file_excel_treatment = f'{config.folder_path_preprocessing}/preprocessing_{file_excel}'
+    if not os.path.exists(f'{config.folder_path_preprocessing}'):
+        os.makedirs(f'{config.folder_path_preprocessing}')
     workbook.save(file_excel_treatment)
     workbook.close()
-    logger.info(f'{file_excel}: сняли объединение ячеек, проставли уровни группировок и признак курсив в ячейках')
+    logger.info(f'{file_excel}: сняли объединение ячеек, проставили уровни группировок и признак курсив в ячейках')
     return file_excel_treatment

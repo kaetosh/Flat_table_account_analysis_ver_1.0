@@ -1,8 +1,10 @@
+import os
 import tkinter as tk
 from tkinter import filedialog
 import sys
 
 from logger import logger
+import config
 
 def select_folder():
     root = tk.Tk()
@@ -11,5 +13,7 @@ def select_folder():
     if not folder_path:
         logger.info("Отмена выбора папки. Скрипт завершен неудачно.")
         sys.exit()  # Завершить работу скрипта, если выбор папки отменен
-    return folder_path
+    config.folder_path = os.path.normpath(folder_path)
+    config.folder_path_converted = os.path.normpath(os.path.join(folder_path, "ConvertedFiles"))
+    config.folder_path_preprocessing = os.path.normpath(os.path.join(folder_path, "preprocessing_files"))
 

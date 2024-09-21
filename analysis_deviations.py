@@ -1,8 +1,10 @@
 from logger import logger
+from config import folder_path_preprocessing, folder_path_converted
 
-from utility_functions import is_accounting_code
+from utility_functions import is_accounting_code, catch_errors
 
 
+@catch_errors()
 def revolutions_before_processing(df, file_excel, sign_1c, debet_name, credit_name):
     df_for_check = df[[sign_1c, debet_name, credit_name]].copy()
     df_for_check['Кор.счет_ЧЕК'] = df_for_check[sign_1c].apply(lambda x: str(x) if is_accounting_code(x) else None).copy()
@@ -31,6 +33,7 @@ def revolutions_before_processing(df, file_excel, sign_1c, debet_name, credit_na
 
     return df_for_check
 
+@catch_errors()
 def revolutions_after_processing(df, df_for_check, file_excel):
     df_for_check_2 = df[['Корр_счет', 'С кред. счетов', 'В дебет счетов']].copy()
     df_for_check_2['Корр_счет'] = df_for_check_2['Корр_счет'].astype(str).copy()

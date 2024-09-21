@@ -1,7 +1,5 @@
 import os
 import time
-import shutil
-import sys
 import pandas as pd
 from pyfiglet import Figlet
 
@@ -16,26 +14,30 @@ from analysis_deviations import revolutions_before_processing, revolutions_after
 from processing.A_table_header import table_header
 from processing.B_handle_missing_values_in_account import handle_missing_values_in_account
 from processing.C_horizontal_structure import horizontal_structure
-from processing.E_corr_account_column import corr_account_col
-from processing.F_lines_delete import lines_delete
-from processing.G_shiftable_level import shiftable_level
-
+from processing.D_corr_account_column import corr_account_col
+from processing.E_lines_delete import lines_delete
+from processing.F_shiftable_level import shiftable_level
+from config import start_message
+from utility_functions import delete_folders, terminate_script
 
 f1 = Figlet(font='ansi_shadow', justify="center")
 f2 = Figlet(font='ansi_shadow', justify="center")
 
-print(f1.renderText("Flat table generator"), f2.renderText("from 1C account analyses"))
+print(f1.renderText("Flat analysis"), f2.renderText("of the 1C account"))
+time.sleep(2)
+print(start_message)
 logger.info(f"Сейчас будет предложено выбрать папку с файлами Excel - анализами счетов.")
 time.sleep(2)
-folder_path = os.path.normpath(select_folder())
+select_folder()
+from config import folder_path_converted, folder_path
+
 logger.info(f"Выбрана папка {folder_path}, проверим наличие файлов Excel...")
-save_as_xlsx_not_alert(folder_path)
-folder_path_converted = os.path.join(folder_path, "ConvertedFiles")
+
+save_as_xlsx_not_alert()
 files = os.listdir(folder_path_converted)
 excel_files = [file for file in files if file.endswith('.xlsx') or file.endswith('.xls')]
 if not excel_files:
-    logger.error(f'Не найдены файлы Excel в папке {folder_path_converted}. Скрипт завершен неудачно')
-    sys.exit()
+    terminate_script(f'Не найдены файлы Excel в папке {folder_path_converted}. Скрипт завершен неудачно')
 
 # Инициализируем пустой словарь, куда мы добавим обработанные таблицы каждой компании, затем объединим эти файлы в один.
 dict_df = {} # для обрабатываемых таблиц
@@ -47,7 +49,11 @@ def main_process():
 
     for file_excel in excel_files:
         # предварительная обработка с помощью openpyxl (снятие объединения, уровни)
-        file_excel_treatment = preprocessing_file_excel(f'{folder_path_converted}/{file_excel}')
+
+        folder_path_converted_file = os.path.normpath(os.path.join(folder_path_converted, file_excel))
+        #file_excel_treatment = preprocessing_file_excel(f'{folder_path_converted}\{file_excel}')
+
+        file_excel_treatment = preprocessing_file_excel(folder_path_converted_file)
 
         # загрузка в pandas
         df = pd.read_excel(file_excel_treatment)
@@ -60,7 +66,6 @@ def main_process():
         # если есть незаполненные поля группировки (вид номенклатуры например), ставим "не_заполнено"
         if handle_missing_values_in_account(df, file_excel):
             logger.info(f'{file_excel}: обнаружили незаполненные поля, там проставили "не заполнено"')
-        
 
         # разносим иерархию в горизонтальную плоскость
         # если иерархии нет, то файл пустой, пропускаем его
@@ -119,60 +124,33 @@ def main_process():
         if deviation_rpm < 1:
             logger.info('отклонения по оборотам до и после обработки менее 1')
         else:
-            logger.error('\nобнаружены существенные отклонения по оборотам до и после обработки. См "СВОД_ОТКЛ_анализ_счетов.xlsx"')
+            logger.warning('обнаружены существенные отклонения по оборотам до и после обработки. См "СВОД_ОТКЛ_анализ_счетов.xlsx"')
         
         logger.info('Объединение завершено, пытаемся выгрузить файл в excel...')
     except Exception as e:
-        logger.error(f'\n\nОшибка при объединении файлов {e}')
+        terminate_script(f'Ошибка при объединении файлов {e}')
+
     # выгружаем в excel
     try:
-        summary_folder = os.path.join(folder_path, "summary_files")
-        folder_path_summary_files = os.path.join(summary_folder, "СВОД_анализ_счетов.xlsx")
-        if not os.path.exists(summary_folder):
-            os.makedirs(summary_folder)
-        result.to_excel(folder_path_summary_files, index=False)
-        folder_path_result_check = os.path.join(folder_path, "summary_files/СВОД_ОТКЛ_анализ_счетов.xlsx")
-        result_check.to_excel(folder_path_result_check, index=False)
+        folder_path_summary_files = os.path.join(folder_path, "_СВОД_анализ_счетов.xlsx")
+
+        with pd.ExcelWriter(folder_path_summary_files) as writer:
+            result.to_excel(writer, sheet_name='Свод', index=False)
+            result_check.to_excel(writer, sheet_name='Сверка', index=False)
         logger.info('Файл успешно выгружен в excel')
 
     except Exception as e:
-        logger.error(f'Ошибка при сохранении файла в excel: {e}')
+        terminate_script(f'Ошибка при сохранении файла в excel: {e}')
 
-    folder_path_del_files = 'preprocessing_files'
-
-    # Убедитесь, что папка существует перед ее удалением
-    if os.path.exists(folder_path_del_files):
-        # Удаляем файлы из папки
-        for filename in os.listdir(folder_path_del_files):
-            file_path = os.path.join(folder_path_del_files, filename)
-            # Удаляем файл
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-
-        # Удаляем папку
-        shutil.rmtree(folder_path_del_files)
-        logger.info(f"Папка и ее содержимое {folder_path_del_files} были успешно удалены.")
-    else:
-        logger.error(f"Папка {folder_path_del_files} не существует.")
-    
-    for filename in os.listdir(folder_path_converted):
-        file_path = os.path.join(folder_path_converted, filename)
-        os.remove(file_path)
-    
-    try:
-        os.rmdir(folder_path_converted)
-        logger.info('Удалены временные файлы')
-    except OSError as e:
-        logger.error(f"Error: {e.filename} - {e.strerror}")
+    delete_folders()
     
     if empty_files:
         logger.info(f'Анализы счетов без оборотов ({len(empty_files)}): {empty_files}')
     
-    logger.info('Скрипт завершен!!!')
+    logger.info('Скрипт завершен успешно. Можно закрыть программу.')
 
     
 
 if __name__ == "__main__":
     main_process()
-    logger.info("Нажмите Enter для выхода.")
     input()

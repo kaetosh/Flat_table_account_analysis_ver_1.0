@@ -1,6 +1,6 @@
 from logger import logger
-from settings import exclude_values
-from utility_functions import is_accounting_code
+import config
+from utility_functions import is_accounting_code, catch_errors
 
 
 # определяет родительские счета
@@ -33,8 +33,9 @@ def is_parent(account, accounts):
             return True
     return False
 
+@catch_errors()
 def lines_delete(df, sign_1c, file_excel):
-    df_delete = df[~df[sign_1c].isin(exclude_values)]
+    df_delete = df[~df[sign_1c].isin(config.exclude_values)]
     df_delete = df_delete.dropna(subset=[sign_1c]).copy()
     df_delete = df_delete[df_delete['Курсив'] == 0][[sign_1c, 'Корр_счет']]
     unique_df = df_delete.drop_duplicates(subset=[sign_1c, 'Корр_счет'])
@@ -75,7 +76,7 @@ def lines_delete(df, sign_1c, file_excel):
     df[sign_1c] = df[sign_1c].apply(lambda x: str(x))
 
     df = df[
-        ~df[sign_1c].isin(exclude_values) &  # Исключение определенных значений (Сальдо, Оборот и т.д.)
+        ~df[sign_1c].isin(config.exclude_values) &  # Исключение определенных значений (Сальдо, Оборот и т.д.)
         ~df[sign_1c].isin(del_acc) # Исключение счетов, по которым есть расшифровка субконто (60, 60.01 и т.д.)
         ].copy()
     
