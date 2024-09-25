@@ -69,7 +69,14 @@ def lines_delete(df, sign_1c, file_excel):
         del_acc_with_94 = [i for i in acc_with_94 if i !='94.Н']
     del_acc = list(set(del_acc + del_acc_with_94))
     
-    
+    for i in config.acc_out_subacc:
+        unwanted_subaccounts = [n for n in all_acc_dict if i in n]
+        del_unwanted_subaccounts = [n for n in unwanted_subaccounts if n !=i]
+        del_acc = list(set(del_acc + del_unwanted_subaccounts))
+
+    for i in acc_out_subacc:
+        if i in del_acc:
+            del_acc.remove(i)
     
     logger.debug(f'n\финал для удаления: {del_acc}')
     
