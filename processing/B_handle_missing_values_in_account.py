@@ -17,8 +17,10 @@ def handle_missing_values_in_account(df, file_excel):
     # Приводим значения столбца Счет к числовому, в т.ч. и NaN
     # (получим np.nan, чтобы работал метод ffill), строковые не трогаем
 
-    df['Счет'] = df['Счет'].apply(lambda x: pd.to_numeric(x) if not isinstance(x, str) else x)
-    mask = (df['Счет'].isna()) & (df['Уровень'] < df['Уровень'].shift(-1))
+    try:
+        mask = df['Счет'].isna() & ~df['Кор.счет'].apply(is_accounting_code) & df['Кор.счет'].isin(exclude_values)
+    except KeyError:
+        mask = df['Счет'].isna() & ~df['Кор. Счет'].apply(is_accounting_code) & df['Кор. Счет'].isin(exclude_values)
     df['Счет'] = np.where(mask, 'Не_заполнено', df['Счет'])
 
     # проходим по значениям столбца Счет
@@ -44,7 +46,7 @@ def handle_missing_values_in_account(df, file_excel):
     #    df.loc[:, 'Счет'] = np.where((df['Уровень'] == level_empty_value)
     #                                 & (df['Счет'].isna()), 'Не_указано', df['Счет'])
     #    result = True
-    logger.info(f'{file_excel}: добавили столбец с наименованием файла (для различения наименований компаний)')
+    # logger.info(f'{file_excel}: добавили столбец с наименованием файла (для различения наименований компаний)')
     
     df['Счет'] = df['Счет'].ffill()  # пустые значения в данном столбце заполнили последними непустыми значениями
     df['Счет'] = df['Счет'].apply(lambda x: str(x))
