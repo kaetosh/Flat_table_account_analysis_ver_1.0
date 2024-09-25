@@ -13,8 +13,8 @@ def is_accounting_code(value):
         try:
             parts = str(value).split('.')
             has_digit = any(part.isdigit() for part in parts)
-            # Checking whether each part consists only of numbers or (if the length is less than 3) only of letters
-            return has_digit and all(part.isdigit() or (len(part) < 3 and part.isalpha()) for part in parts)
+            # Checking whether each part consists only of numbers (with a length of 1 or 2) or (if the length is less than 3) only of letters
+            return has_digit and all((part.isdigit() and len(part) <= 2) or (len(part) < 3 and part.isalpha()) for part in parts)
         except TypeError:
             return False
     else:
