@@ -4,16 +4,14 @@
 """
 
 import numpy as np
-from logger import logger
-import pandas as pd
 
+from config import exclude_values
 from utility_functions import is_accounting_code, catch_errors
 
 
 @catch_errors()
-def handle_missing_values_in_account(df, file_excel):
+def handle_missing_values_in_account(df):
     result = False
-    current_ind = None
     # Приводим значения столбца Счет к числовому, в т.ч. и NaN
     # (получим np.nan, чтобы работал метод ffill), строковые не трогаем
 

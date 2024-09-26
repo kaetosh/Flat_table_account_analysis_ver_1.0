@@ -64,7 +64,7 @@ def main_process():
         logger.info(f'{file_excel}: успешно создали шапку таблицы')
 
         # если есть незаполненные поля группировки (вид номенклатуры например), ставим "не_заполнено"
-        if handle_missing_values_in_account(df, file_excel):
+        if handle_missing_values_in_account(df):
             logger.info(f'{file_excel}: обнаружили незаполненные поля, там проставили "не заполнено"')
 
         # разносим иерархию в горизонтальную плоскость

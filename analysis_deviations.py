@@ -1,5 +1,4 @@
 from logger import logger
-from config import folder_path_preprocessing, folder_path_converted
 
 from utility_functions import is_accounting_code, catch_errors
 

@@ -74,7 +74,7 @@ def lines_delete(df, sign_1c, file_excel):
         del_unwanted_subaccounts = [n for n in unwanted_subaccounts if n !=i]
         del_acc = list(set(del_acc + del_unwanted_subaccounts))
 
-    for i in acc_out_subacc:
+    for i in config.acc_out_subacc:
         if i in del_acc:
             del_acc.remove(i)
     
