@@ -1,0 +1,29 @@
+import time
+import sys
+import threading
+
+symbols = ['-','|','/','\\']
+
+def spinner():
+    while True:
+        for symbol in symbols:
+            sys.stdout.write('\r' + symbol)
+            sys.stdout.flush()
+            time.sleep(0.15)
+
+spinner_thread = threading.Thread(target=spinner)
+spinner_thread.daemon = True  # чтобы поток остановился, когда основной поток завершится
+spinner_thread.start()
+
+# основной код программы
+for i in range(100):
+    sys.stdout.write('\r' + ' ' * 10)  # очистка предыдущего символа крутилки
+    sys.stdout.flush()
+    print(f"Файл №{i} отработан")
+    time.sleep(0.5)
+    sys.stdout.write('\r' + ' ' * 10)  # очистка предыдущего символа крутилки
+    sys.stdout.flush()
+    print(f"Файл №{i} сохранен")
+    time.sleep(0.5)
+
+print("Программа завершена")
