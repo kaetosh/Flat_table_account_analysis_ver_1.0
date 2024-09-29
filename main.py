@@ -22,15 +22,17 @@ import config
 f1 = Figlet(font='ansi_shadow', justify="center")
 f2 = Figlet(font='ansi_shadow', justify="center")
 
-# индикатор выполнения программы
-spinner_thread = threading.Thread(target=spinner)
-spinner_thread.daemon = True  # чтобы поток остановился, когда основной поток завершится
-spinner_thread.start()
-
 # вывод заставки и описания программы
 print_with_spinner('\n', f1.renderText("Flat analysis"), f2.renderText("of the 1C account"))
 time.sleep(2)
 print_with_spinner(config.start_message)
+
+input('Для продолжения нажмите Enter')
+
+# индикатор выполнения программы
+spinner_thread = threading.Thread(target=spinner)
+spinner_thread.daemon = True  # чтобы поток остановился, когда основной поток завершится
+spinner_thread.start()
 
 # выбор пользователем папки с обрабатываемыми файлами
 logger_with_spinner(f"Сейчас будет предложено выбрать папку с файлами Excel - анализами счетов.")
