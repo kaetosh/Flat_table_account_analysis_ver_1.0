@@ -2,8 +2,8 @@
 Нам нужно сохранить записи самого глубокого уровня иерархии и преобразовать данные так,
 чтобы уровни выше по иерархии были представлены в горизонтальной форме.
 """
-from logger import logger
-from utility_functions import catch_errors
+
+from utility_functions import catch_errors, logger_with_spinner
 
 
 # A function for transferring levels to a horizontal orientation
@@ -23,7 +23,7 @@ def horizontal_structure(df, file_excel):
     max_level = df['Уровень'].max()
     
     if max_level == 0 or df.empty:
-        logger.info(f'{file_excel}: файл пустой, не включаем в свод')
+        logger_with_spinner(f'{file_excel}: файл пустой, не включаем в свод')
         return True
 
     # разнесем уровни в горизонтальную ориентацию в цикле

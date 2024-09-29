@@ -1,6 +1,10 @@
+"""
+Удаляем строки с дублирующими оборотами
+"""
+
 from logger import logger
 import config
-from utility_functions import is_accounting_code, catch_errors
+from utility_functions import is_accounting_code, catch_errors, logger_with_spinner
 
 
 # определяет родительские счета
@@ -110,7 +114,7 @@ def lines_delete(df, sign_1c, file_excel):
         df.rename(columns={sign_1c: 'Субконто_корр_счета', 'Счет': 'Аналитика', 'Дебет': 'С кред. счетов',
                               'Кредит': 'В дебет счетов'}, inplace=True)
 
-    logger.info(f'{file_excel}: переименовали некоторые столбцы по смыслу')
+    logger_with_spinner(f'{file_excel}: переименовали некоторые столбцы по смыслу')
 
     # Указываем желаемый порядок для известных столбцов
     desired_order = ['Исх.файл', 'Субсчет', 'Аналитика', 'Корр_счет', 'Субконто_корр_счета', 'С кред. счетов', 'В дебет счетов']
@@ -125,7 +129,7 @@ def lines_delete(df, sign_1c, file_excel):
     df = df[new_order]
     df.loc[:, 'Субконто_корр_счета'] = df['Субконто_корр_счета'].apply(
         lambda x: 'Не расшифровано' if is_accounting_code(x) else x)
-    logger.info(f'{file_excel}: переупорядочили столбцы')
+    logger_with_spinner(f'{file_excel}: переупорядочили столбцы')
 
     df = df.dropna(subset=['С кред. счетов', 'В дебет счетов'], how='all')
     df = df[(df['С кред. счетов'] != 0) | (df['С кред. счетов'].notna())]

@@ -1,14 +1,14 @@
+"""
+Обновляем наименования столбцов на корректные
+"""
+
 import config
 
-from logger import logger
-from utility_functions import terminate_script, catch_errors
+from utility_functions import terminate_script, catch_errors, logger_with_spinner
 
 
 @catch_errors()
 def table_header(df, file_excel):
-    """
-    Обновляем наименования столбцов на корректные
-    """
 
     # Получаем индекс строки, содержащей target_value (значение)
     index_for_columns = None
@@ -29,13 +29,13 @@ def table_header(df, file_excel):
     # Переименуем первые два столбца
     df.columns.values[0] = 'Уровень'
     df.columns.values[1] = 'Курсив'
-    logger.info(f'{file_excel}: успешно обновили шапку таблицы, удалили строки выше шапки')
+    logger_with_spinner(f'{file_excel}: успешно обновили шапку таблицы, удалили строки выше шапки')
 
     # Удаляем пустые строки и столбцы
     df.dropna(axis=0, how='all', inplace=True)
     if 'nan' in df.columns.to_list():
         df.drop(columns=['nan'], inplace=True)
-    logger.info(f'{file_excel}: удалили пустые строки и столбцы')
+    logger_with_spinner(f'{file_excel}: удалили пустые строки и столбцы')
 
     # Добавим столбец с названием файла
     df['Исх.файл'] = file_excel

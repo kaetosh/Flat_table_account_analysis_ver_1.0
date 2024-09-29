@@ -1,6 +1,9 @@
-from logger import logger
+"""
+Определяем обороты в разрезе корреспондирующих счетов до и после обработки по каждому файлу.
+В результирующем файле сравниваем показатели для контроля корректности обработки
+"""
 
-from utility_functions import is_accounting_code, catch_errors
+from utility_functions import is_accounting_code, catch_errors, logger_with_spinner
 
 
 @catch_errors()
@@ -28,7 +31,7 @@ def revolutions_before_processing(df, file_excel, sign_1c, debet_name, credit_na
 
     if sign_1c != 'Кор.счет':
         df_for_check.rename(columns={'Дебет': 'С кред. счетов', 'Кредит': 'В дебет счетов'}, inplace=True)
-    logger.info(f'{file_excel}: сформировали таблицу с оборотами в разрезе счетов до обработки')
+    logger_with_spinner(f'{file_excel}: сформировали таблицу с оборотами в разрезе счетов до обработки')
 
     return df_for_check
 
@@ -53,5 +56,5 @@ def revolutions_after_processing(df, df_for_check, file_excel):
     merged_df['Разница_С_кред'] = merged_df['Разница_С_кред'].apply(lambda x: round(x))
     merged_df['Разница_В_дебет'] = merged_df['Разница_В_дебет'].apply(lambda x: round(x))
     merged_df['Исх.файл'] = file_excel
-    logger.info(f'{file_excel}: сформировали дополнительную таблицу с отклонениями до и после обработки')
+    logger_with_spinner(f'{file_excel}: сформировали дополнительную таблицу с отклонениями до и после обработки')
     return merged_df

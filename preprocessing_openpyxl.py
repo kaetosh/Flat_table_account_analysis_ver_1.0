@@ -2,11 +2,18 @@ import os
 import openpyxl
 from pathlib import Path
 
-from logger import logger
 import config
-from utility_functions import terminate_script, catch_errors
+from utility_functions import terminate_script, catch_errors, logger_with_spinner
 
-
+'''
+Предварительная обработка файлов Excel:
+    - снятие объединение ячеек
+    - удаление пустых столбцов
+    - нумерация уровней вложенности (отдельный столбец)
+    - признак курсива (отдельный столбец). Некоторые обороты в анализе счета дополнительно группируются в отдельные строки:
+    например "Поставщики", "Банки", "Монополии", "Гос.органы".
+    Значения по этим строкам не включаются в результирующий файл, чтобы избежать дублирование оборотов 
+'''
 @catch_errors()
 def preprocessing_file_excel(path_file_excel: str):
     file_excel =Path(path_file_excel).name
@@ -69,5 +76,5 @@ def preprocessing_file_excel(path_file_excel: str):
         os.makedirs(f'{config.folder_path_preprocessing}')
     workbook.save(file_excel_treatment)
     workbook.close()
-    logger.info(f'{file_excel}: сняли объединение ячеек, проставили уровни группировок и признак курсив в ячейках')
+    logger_with_spinner(f'{file_excel}: сняли объединение ячеек, проставили уровни группировок и признак курсив в ячейках')
     return file_excel_treatment

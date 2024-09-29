@@ -1,3 +1,7 @@
+"""
+Выравниваем столбцы с счетами
+"""
+
 import pandas as pd
 
 from utility_functions import is_accounting_code, catch_errors

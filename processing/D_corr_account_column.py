@@ -1,7 +1,10 @@
-import types
-from logger import logger
+"""
+Определяем и добавляем столбец с корр.счетом
+"""
 
-from utility_functions import is_accounting_code, catch_errors
+import types
+
+from utility_functions import is_accounting_code, catch_errors, logger_with_spinner
 
 
 @catch_errors()
@@ -26,7 +29,7 @@ def corr_account_col(df, file_excel):
 
     # Заполнение пропущенных значений в столбце значениями из предыдущей строки
     df['Корр_счет'] = df['Корр_счет'].ffill()
-    logger.info(f'{file_excel}: добавили столбец с корр.счетом')
+    logger_with_spinner(f'{file_excel}: добавили столбец с корр.счетом')
 
     ns = types.SimpleNamespace(**locals())
     return ns
